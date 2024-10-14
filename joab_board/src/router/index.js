@@ -1,14 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'; // Ensure this line is correct
-import Home from '@/components/Home.vue';
 import LoginPage from '@/components/LoginPage.vue'; // Update to match your new filename
 import JobDetail from '@/components/JobDetail.vue';
+import JobList from '@/components/JobList.vue';
+
 
 const routes = [
-  {
-    path: '/',
-    name: 'HomePage',
-    component: Home,
-  },
   {
     path: '/login',
     name: 'LoginPage',
@@ -19,6 +15,11 @@ const routes = [
     name: 'JobDetail',
     component: JobDetail,
   },
+  {
+    path: '/jobs',
+    name: 'JobList',
+    component: JobList,
+  }
 ];
 
 

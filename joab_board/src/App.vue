@@ -5,6 +5,7 @@
     <router-link to="/login">Login</router-link> <br>
     <!-- Job List Link -->
     <router-link to="/jobs">Job List</router-link>
+    <router-view></router-view>
   </div>
 </template>
 
