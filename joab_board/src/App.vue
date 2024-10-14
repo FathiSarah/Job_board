@@ -1,7 +1,10 @@
 <template>
   <div id="app">
     <h1>HireMe</h1>
-    <router-view></router-view>
+    <!-- Navigation Links -->
+    <router-link to="/login">Login</router-link> <br>
+    <!-- Job List Link -->
+    <router-link to="/jobs">Job List</router-link>
   </div>
 </template>
 
