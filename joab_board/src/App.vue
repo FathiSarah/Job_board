@@ -3,9 +3,12 @@
     <h1>HireMe</h1>
     <!-- Navigation Links -->
     <router-link to="/login">Login</router-link> <br>
-    <JobList v-if="showJobList" />
-    <!-- Router view for other routes -->
-    <router-view v-else></router-view>
+
+    <!-- JobList Component is directly rendered here -->
+    <JobList />
+
+    <!-- Keep router-view for other routes like login -->
+    <router-view></router-view>
   </div>
 </template>
 
@@ -15,12 +18,7 @@ import JobList from './components/JobList.vue';
 export default {
   name: 'App',
   components: {
-    JobList,
-  },
-  data() {
-    return {
-      showJobList: true, // Controls whether to show the JobList or router view
-    };
+    JobList, // Import and use JobList component
   },
 };
 </script>

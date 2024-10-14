@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'; // Ensure this line is correct
-import LoginPage from '@/components/LoginPage.vue'; // Update to match your new filename
 import JobDetail from '@/components/JobDetail.vue';
 import JobList from '@/components/JobList.vue';
+import LoginPage from '@/components/LoginPage.vue';
 
 
 const routes = [
