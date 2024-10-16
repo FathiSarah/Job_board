@@ -2,7 +2,7 @@
     <nav class="navbar">
       <div class="navbar-container">
             <div class="navbar-brand">
-                <a href="#">Across the street </a>
+                <a href="/">Across the street</a>
             </div>
     
             <!-- Navigation Links -->
@@ -15,6 +15,7 @@
             <!-- Login Button -->
             <div class="navbar-actions">
                 <button class="login-button" @click="goToLogin">Login</button>
+                <button class="signup-button" @click="goToSignUp">Sign up</button>
             </div>
         </div>
     </nav>
@@ -25,6 +26,9 @@
         methods: {
             goToLogin() {
                 this.$router.push('/login'); // Navigate to the login page
+            },
+            goToSignUp() {
+                this.$router.push('/signup'); // Navigate to the signup page
             },
         },
     };
@@ -79,17 +83,18 @@
         border-radius: 5px;
     }
 
-    .login-button {
+    .login-button, .signup-button {
         background: white;
         color: rgb(0, 0, 0);
         border: none;
+        margin: 10px;
         padding: 10px 20px;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.3s;
     }
     
-    .login-button:hover {
+    .login-button:hover , .signup-button:hover {
         background: radial-gradient(circle, #002c5b61, #85858564, #84241d63);
     }
 </style>

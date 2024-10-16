@@ -33,17 +33,6 @@ router.post("/", (req, res) => {
     });
 });
 
-// Retrieve all applications
-router.get("/", (req, res) => {
-    const query = "SELECT * FROM applications";
-    db.query(query, (err, results) => {
-        if (err) {
-            return handleDbError(err, res);
-        }
-        res.json(results);
-    });
-});
-
 // Retrieve a specific application by ID
 router.get("/:id", (req, res) => {
     const applicationId = req.params.id;
@@ -56,6 +45,17 @@ router.get("/:id", (req, res) => {
             return res.status(404).send("Application not found");
         }
         res.json(results[0]);
+    });
+});
+
+// Retrieve all applications
+router.get("/", (req, res) => {
+    const query = "SELECT * FROM applications";
+    db.query(query, (err, results) => {
+        if (err) {
+            return handleDbError(err, res);
+        }
+        res.json(results);
     });
 });
 

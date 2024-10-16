@@ -9,30 +9,6 @@ const db = require("mysql").createConnection({
     database: process.env.DB_NAME,
 });
 
-// Middleware to check if the user is authenticated and an admin
-function isAdmin(req, res, next) {
-    const { authToken } = req.headers; // Get token or user ID from headers or session
-
-    if (!authToken) {
-        return res.status(401).json({ message: 'Access denied. No token provided.' });
-    }
-
-    // Check if the user is an admin
-    const query = "SELECT role FROM users WHERE id = ?";
-    db.query(query, [authToken], (err, results) => {
-        if (err || results.length === 0) {
-            return res.status(403).json({ message: 'Access denied.' });
-        }
-
-        const user = results[0];
-        if (user.role === 'admin') {
-            next(); // Proceed if the user is an admin
-        } else {
-            return res.status(403).json({ message: 'Access denied. Admins only.' });
-        }
-    });
-}
-
 // Get all users
 router.get("/", (req, res) => {
     const query = "SELECT * FROM peoples";
