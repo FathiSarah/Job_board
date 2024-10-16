@@ -9,36 +9,48 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME,
 });
 
+// Create a new application
 router.post("/", (req, res) => {
-    const { user_id, advertisement_id, message } = req.body;
-    if (!user_id || !advertisement_id) {
-        return res.status(400).send("User ID and Advertisement ID are required");
+    const { user_id, advertisement_id, message, email, complet_name } = req.body;
+
+    if (!user_id || !advertisement_id || !complet_name || !email || !message) {
+        return res.status(400).send("All fields are required");
     }
-    const query = "INSERT INTO applications (user_id, advertisement_id, message) VALUES (?, ?, ?)";
-    db.query(query, [user_id, advertisement_id, message], (err, results) => {
+
+    const query = "INSERT INTO applications (user_id, advertisement_id, message, email, complet_name) VALUES (?, ?, ?, ?, ?)";
+    db.query(query, [user_id, advertisement_id, message, email, complet_name], (err, results) => {
         if (err) {
-            return res.status(500).send(err);
+            return handleDbError(err, res);
         }
-        res.json({ id: results.insertId, user_id, advertisement_id, message });
+        res.status(201).json({
+            id: results.insertId,
+            user_id,
+            advertisement_id,
+            message,
+            email,
+            complet_name,
+        });
     });
 });
 
+// Retrieve all applications
 router.get("/", (req, res) => {
     const query = "SELECT * FROM applications";
     db.query(query, (err, results) => {
         if (err) {
-            return res.status(500).send(err);
+            return handleDbError(err, res);
         }
         res.json(results);
     });
 });
 
+// Retrieve a specific application by ID
 router.get("/:id", (req, res) => {
-    const { id } = req.params;
+    const applicationId = req.params.id;
     const query = "SELECT * FROM applications WHERE id = ?";
-    db.query(query, [id], (err, results) => {
+    db.query(query, [applicationId], (err, results) => {
         if (err) {
-            return res.status(500).send(err);
+            return handleDbError(err, res);
         }
         if (results.length === 0) {
             return res.status(404).send("Application not found");
@@ -47,32 +59,35 @@ router.get("/:id", (req, res) => {
     });
 });
 
+// Update an application by ID
 router.put("/:id", (req, res) => {
-    const { id } = req.params;
-    const { message } = req.body;
-    const query = "UPDATE applications SET message = ? WHERE id = ?";
-    db.query(query, [message, id], (err, results) => {
+    const applicationId = req.params.id;
+    const { message, email, complet_name } = req.body;
+
+    const query = "UPDATE applications SET message = ?, email = ?, complet_name = ? WHERE id = ?";
+    db.query(query, [message, email, complet_name, applicationId], (err, results) => {
         if (err) {
-            return res.status(500).send(err);
+            return handleDbError(err, res);
         }
         if (results.affectedRows === 0) {
             return res.status(404).send("Application not found");
         }
-        res.json({ message: "Application updated successfully" });
+        res.send("Application updated successfully");
     });
 });
 
+// Delete an application by ID
 router.delete("/:id", (req, res) => {
-    const { id } = req.params;
+    const applicationId = req.params.id;
     const query = "DELETE FROM applications WHERE id = ?";
-    db.query(query, [id], (err, results) => {
+    db.query(query, [applicationId], (err, results) => {
         if (err) {
-            return res.status(500).send(err);
+            return handleDbError(err, res);
         }
         if (results.affectedRows === 0) {
             return res.status(404).send("Application not found");
         }
-        res.json({ message: "Application deleted successfully" });
+        res.send("Application deleted successfully");
     });
 });
 

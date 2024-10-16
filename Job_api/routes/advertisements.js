@@ -9,8 +9,14 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME,
 });
 
+// Get all advertisements with their associated company details
 router.get("/", (req, res) => {
-    db.query("SELECT * FROM advertisements", (err, results) => {
+    const query = `
+        SELECT advertisements.*, companies.name AS company_name, companies.website AS company_website 
+        FROM advertisements 
+        JOIN companies ON advertisements.company_id = companies.user_id`;
+    
+    db.query(query, (err, results) => {
         if (err) {
             return res.status(500).send(err);
         }
@@ -18,9 +24,16 @@ router.get("/", (req, res) => {
     });
 });
 
+// Get a specific advertisement by ID
 router.get("/:id", (req, res) => {
     const { id } = req.params;
-    db.query("SELECT * FROM advertisements WHERE id = ?", [id], (err, results) => {
+    const query = `
+        SELECT advertisements.*, companies.name AS company_name, companies.website AS company_website 
+        FROM advertisements 
+        JOIN companies ON advertisements.company_id = companies.user_id 
+        WHERE advertisements.id = ?`;
+    
+    db.query(query, [id], (err, results) => {
         if (err) {
             return res.status(500).send(err);
         }
@@ -31,39 +44,59 @@ router.get("/:id", (req, res) => {
     });
 });
 
+// Create a new advertisement
 router.post("/", (req, res) => {
     const { title, description, company_id, city, zip_code, salary_range } = req.body;
-    db.query("INSERT INTO advertisements (title, description, company_id, city, zip_code, salary_range) VALUES (?, ?, ?, ?, ?, ?)",
-        [title, description, company_id, city, zip_code, salary_range],
-        (err, results) => {
-            if (err) {
-                return res.status(500).send(err);
-            }
-            res.json({ id: results.insertId, title, description, company_id, city, zip_code, salary_range });
+
+    if (!title || !description || !company_id || !city || !zip_code || !salary_range) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const query = `
+        INSERT INTO advertisements (title, description, company_id, city, zip_code, salary_range) 
+        VALUES (?, ?, ?, ?, ?, ?)`;
+
+    db.query(query, [title, description, company_id, city, zip_code, salary_range], (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
         }
-    );
+        res.json({
+            id: results.insertId,
+            title,
+            description,
+            company_id,
+            city,
+            zip_code,
+            salary_range
+        });
+    });
 });
 
+// Update an existing advertisement
 router.put("/:id", (req, res) => {
     const { id } = req.params;
     const { title, description, company_id, city, zip_code, salary_range } = req.body;
-    db.query(
-        "UPDATE advertisements SET title = ?, description = ?, company_id = ?, city = ?, zip_code = ?, salary_range = ? WHERE id = ?",
-        [title, description, company_id, city, zip_code, salary_range, id],
-        (err, results) => {
-            if (err) {
-                return res.status(500).send(err);
-            }
-            if (results.affectedRows === 0) {
-                return res.status(404).send("Advertisement not found");
-            }
-            res.json({ message: "Advertisement updated successfully" });
+
+    const query = `
+        UPDATE advertisements 
+        SET title = ?, description = ?, company_id = ?, city = ?, zip_code = ?, salary_range = ? 
+        WHERE id = ?`;
+
+    db.query(query, [title, description, company_id, city, zip_code, salary_range, id], (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
         }
-    );
+        if (results.affectedRows === 0) {
+            return res.status(404).send("Advertisement not found");
+        }
+        res.json({ message: "Advertisement updated successfully" });
+    });
 });
 
+// Delete an advertisement
 router.delete("/:id", (req, res) => {
     const { id } = req.params;
+
     db.query("DELETE FROM advertisements WHERE id = ?", [id], (err, results) => {
         if (err) {
             return res.status(500).send(err);

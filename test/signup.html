@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Sign Up</h2>
+        <form action="#" method="POST">
+            <div class="input-container">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="input-container">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="input-container">
+                <label for="first-name">First Name:</label>
+                <input type="text" id="first-name" name="first-name" required>
+            </div>
+            <div class="input-container">
+                <label for="last-name">Last Name:</label>
+                <input type="text" id="last-name" name="last-name" required>
+            </div>
+            <div class="input-container">
+                <label for="tel">Phone Number:</label>
+                <input type="tel" id="tel" name="tel" required>
+            </div>
+            <div class="input-container">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+            <div class="input-container">
+                <label for="zip">Zip Code:</label>
+                <input type="text" id="zip" name="zip" required>
+            </div>
+            <button type="submit" class="signup-button">Sign Up</button>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById("signup-button").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const formData = {
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value,
+                first_name: document.getElementById("first-name").value,
+                last_name: document.getElementById("last-name").value,
+                tel: document.getElementById("tel").value,
+                city: document.getElementById("city").value,
+                zip_code: document.getElementById("zip").value
+            };
+
+            try {
+                const response = await fetch("http://localhost:3000/api/peoples", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert("Sign Up Successful! User ID: " + data.id);
+                } else {
+                    const error = await response.json();
+                    alert("Error: " + error.message);
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                alert("There was an error signing up.");
+            }
+        });
+    </script>
+</body>
+</html>
