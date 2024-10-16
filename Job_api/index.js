@@ -12,6 +12,7 @@ const applicationsRoutes = require("./routes/applications");
 const usersRoutes = require("./routes/users");
 const adminRoutes = require("./routes/admin");
 const loginRouter = require("./routes/login");
+const signupRouter = require("./routes/signup");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -48,6 +49,7 @@ app.use("/api/applications", applicationsRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/login", loginRouter);
+app.use("/api/signup", signupRouter);
 
 // Start the server
 app.listen(PORT, () => {

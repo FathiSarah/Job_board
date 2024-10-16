@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require("express"); 
 const router = express.Router();
 const mysql = require("mysql");
 
@@ -9,7 +9,7 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME,
 });
 
-// Get all advertisements with their associated company details
+// Get all advertisements with their associated company details (GET /advertisements)
 router.get("/", (req, res) => {
     const query = `
         SELECT advertisements.*, companies.name AS company_name, companies.website AS company_website 
@@ -24,7 +24,7 @@ router.get("/", (req, res) => {
     });
 });
 
-// Get a specific advertisement by ID
+// Get a specific advertisement by ID (GET /advertisements/:id)
 router.get("/:id", (req, res) => {
     const { id } = req.params;
     const query = `
