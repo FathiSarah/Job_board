@@ -68,13 +68,13 @@
                 advertisements: [], // Store all ads
                 loading: true, // Loading state
                 error: null, // Error state
-                selectedAd: null, // Store the selected ad's details
+                selectedAd: null, // Store the selected ad"s details
                 showForm: false, // Show/Hide form
                 selectedJobForApplication: null, // Store selected job for application
                 applicationForm: { // Form data
-                complet_name: '', // Update to match DB column
-                email: '',
-                message: ''
+                complet_name: "", // Update to match DB column
+                email: "",
+                message: ""
                 },
                 loadingSubmission: false, // Loading state for submission
                 submissionError: null, // Error state for submission
@@ -91,9 +91,9 @@
             // Fetch all advertisements
             async fetchAdvertisements() {
                 try {
-                const response = await fetch('http://localhost:3000/api/advertisements');
+                const response = await fetch("http://localhost:3000/api/advertisements");
                 if (!response.ok) {
-                    throw new Error('Failed to fetch advertisements');
+                    throw new Error("Failed to fetch advertisements");
                 }
                 this.advertisements = await response.json();
         
@@ -118,7 +118,7 @@
                 try {
                     const response = await fetch(`http://localhost:3000/api/advertisements/${adId}`);
                     if (!response.ok) {
-                        throw new Error('Failed to fetch advertisement details');
+                        throw new Error("Failed to fetch advertisement details");
                     }
                     this.selectedAd = await response.json(); // Store the detailed ad information
                 } catch (err) {
@@ -154,25 +154,25 @@
                 this.loadingSubmission = true;
         
                 try {
-                    const response = await fetch('http://localhost:3000/api/applications', {
-                        method: 'POST',
+                    const response = await fetch("http://localhost:3000/api/applications", {
+                        method: "POST",
                         headers: {
-                            'Content-Type': 'application/json'
+                            "Content-Type": "application/json"
                         },
                         body: JSON.stringify(applicationData)
                     });
         
                     if (!response.ok) {
                         const errorData = await response.json();
-                        this.submissionError = errorData.message || 'Failed to submit application';
+                        this.submissionError = errorData.message || "Failed to submit application";
                         throw new Error(this.submissionError);
                     }
         
                     this.submissionSuccess = true;
-                    alert('Application submitted successfully!');
+                    alert("Application submitted successfully!");
             
                     this.showForm = false;
-                    this.applicationForm = { complet_name: '', email: '', message: '' };
+                    this.applicationForm = { complet_name: "", email: "", message: "" };
                 } 
                 catch (err) {
                     this.error = err.message;
@@ -185,13 +185,13 @@
     };
 </script>
 <style scoped>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+    @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap");
     
     .job-advertisements {
         max-width: 700px;
         margin: 30px auto;
         padding: 30px;
-        font-family: 'Playfair Display', serif;
+        font-family: "Playfair Display", serif;
         background: radial-gradient(circle, #0057b7, #fff, #ef4135);
         border-radius: 20px;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -284,7 +284,7 @@
         margin: 10px 0;
         border: 1px solid #ccc;
         border-radius: 8px;
-        font-family: 'Playfair Display', serif;
+        font-family: "Playfair Display", serif;
     }
     
     .application-form button {
@@ -306,7 +306,7 @@
     a {
         color: #2980b9;
         text-decoration: none;
-        font-family: 'Playfair Display', serif;
+        font-family: "Playfair Display", serif;
     }
     
     a:hover {

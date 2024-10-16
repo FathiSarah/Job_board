@@ -25,10 +25,10 @@
     export default {
         methods: {
             goToLogin() {
-                this.$router.push('/login'); // Navigate to the login page
+                this.$router.push("/login"); // Navigate to the login page
             },
             goToSignUp() {
-                this.$router.push('/signup'); // Navigate to the signup page
+                this.$router.push("/signup"); // Navigate to the signup page
             },
         },
     };
@@ -40,7 +40,7 @@
         background: radial-gradient(circle, #0057b7, #fff, #ef4135);
         color: white;
         padding: 10px 20px;
-        font-family: 'Playfair Display', serif;
+        font-family: "Playfair Display", serif;
     }
     
     .navbar-container {

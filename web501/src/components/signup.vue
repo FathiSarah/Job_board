@@ -67,56 +67,59 @@
 </template>
   
 <script>
-  import axios from 'axios';
+  import axios from "axios";
   
   export default {
     data() {
       return {
         selectedRole: null, // Track whether the user is signing up as job seeker or company
         jobSeeker: {
-          firstName: '',
-          lastName: '',
-          email: '',
-          password: ''
+            email: "",
+            password: "",
+            firstName: "",
+            lastName: "",
+            city: "",
+            zipcode: "",
+            tel: ""
         },
         company: {
-          companyName: '',
-          email: '',
-          website: '',
-          password: ''
+            companyName: "",
+            email: "",
+            website: "",
+            password: ""
         }
       };
     },
     methods: {
       selectRole(role) {
-        this.selectedRole = role; // Sets the selected role (either 'jobSeeker' or 'company')
+        this.selectedRole = role; // Sets the selected role (either "jobSeeker" or "company")
       },
       async handleJobSeekerSignUp() {
         try {
-          const response = await axios.post('http://localhost:3000/api/jobSeekerSignUp', {
+          const response = await axios.post("http://localhost:3000/api/jobSeekerSignUp", {
             firstName: this.jobSeeker.firstName,
             lastName: this.jobSeeker.lastName,
             email: this.jobSeeker.email,
             password: this.jobSeeker.password
           });
-          alert('Job Seeker account created successfully!');
+          alert("Job Seeker account created successfully!");
           // Handle redirection or other actions after successful signup
         } catch (error) {
-          console.error('Error signing up as job seeker:', error);
+          console.error("Error signing up as job seeker:", error);
         }
       },
       async handleCompanySignUp() {
         try {
-          const response = await axios.post('http://localhost:3000/api/companySignUp', {
+          const response = await axios.post("http://localhost:3000/api/companySignUp", {
             companyName: this.company.companyName,
             email: this.company.email,
             website: this.company.website,
             password: this.company.password
           });
-          alert('Company account created successfully!');
+          alert("Company account created successfully!");
           // Handle redirection or other actions after successful signup
         } catch (error) {
-          console.error('Error signing up as company:', error);
+          console.error("Error signing up as company:", error);
         }
       }
     }

@@ -16,21 +16,21 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   data() {
     return {
-      email: '',
-      password: '',
-      errorMessage: '', // Error message state
+      email: "",
+      password: "",
+      errorMessage: "", // Error message state
     };
   },
   methods: {
     async handleLogin() {
       try {
         // Send a POST request to the login API
-        const response = await axios.post('http://localhost:3000/api/login', {
+        const response = await axios.post("http://localhost:3000/api/login", {
           email: this.email,
           password: this.password,
         });
@@ -40,25 +40,25 @@ export default {
           alert(response.data.message);
 
           // Store auth token in localStorage
-          localStorage.setItem('authToken', response.data.user.id); // Assuming user.id is used as token
+          localStorage.setItem("authToken", response.data.user.id); // Assuming user.id is used as token
 
           // Check if the user is an admin or regular user
-          if (response.data.user.role === 'admin') {
+          if (response.data.user.role === "admin") {
             // If admin, redirect to the admin panel
-            this.$router.push('/admin');
+            this.$router.push("/admin");
           } else {
             // If not admin, redirect to the job listings
-            this.$router.push('/jobs');
+            this.$router.push("/jobs");
           }
         }
       } catch (error) {
         // Error handling
         if (error.response && error.response.status === 404) {
-          this.errorMessage = 'Invalid email or password.';
+          this.errorMessage = "Invalid email or password.";
         } else if (error.response && error.response.status === 401) {
-          this.errorMessage = 'Invalid email or password.';
+          this.errorMessage = "Invalid email or password.";
         } else {
-          this.errorMessage = 'An error occurred while trying to log in.';
+          this.errorMessage = "An error occurred while trying to log in.";
           console.error(error);
         }
       }
