@@ -144,7 +144,7 @@
             // Submit the application form
             async submitApplication() {
                 const applicationData = {
-                    user_id: 4,
+                    user_id: 4, // User_id à la mano ATTENTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     advertisement_id: this.selectedJobForApplication.id,
                     complet_name: this.applicationForm.complet_name,
                     email: this.applicationForm.email,

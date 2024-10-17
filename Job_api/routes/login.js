@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
+const jwt = require("jsonwebtoken");
+const secretKey = 'your-secret-key';
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -34,8 +36,26 @@ router.post("/", (req, res) => {
 
         // Verify the password (plain text for now)
         if (user.password === password) {
-            return res.status(200).json({ message: `Welcome ${user.email}`, user });
-        } else {
+            // Generate JWT
+            const token = jwt.sign(
+                { userId: user.id, role: user.role }, // Payload
+                secretKey,                             // Secret key
+                { expiresIn: '15min' }                   // Options
+            );
+
+            // Respond with the token and user details
+            return res.status(200).json({
+                message: `Welcome ${user.email}`,
+                token, // Include the JWT token
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    role: user.role,
+                }
+            });
+        }
+        
+        else{
             return res.status(401).json({ message: "Invalid email or password" });
         }
     });

@@ -68,7 +68,15 @@ router.post("/", (req, res) => {
                     if (err) {
                         return res.status(500).send(err);
                     }
-                    res.json({ id: userId, name, description, website, city, zip_code, email }); // return userId as id
+                    res.json({
+                        id: userId, 
+                        name, 
+                        description, 
+                        website, 
+                        city, 
+                        zip_code, 
+                        email 
+                    });
                 }
             );
         }

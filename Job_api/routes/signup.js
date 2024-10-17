@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
+const jwt = require("jsonwebtoken");
+const secretKey = 'your-secret-key';
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -47,6 +49,10 @@ router.post("/", (req, res) => {
                     if (err) {
                         return res.status(500).send(err);
                     }
+
+                    // Generate JWT for the user
+                    const token = jwt.sign({ userId, role }, secretKey, { expiresIn: '15min' });
+
                     res.status(201).json({
                         message: "Company account created successfully",
                         user_id: userId,
@@ -56,6 +62,7 @@ router.post("/", (req, res) => {
                         website,
                         city,
                         zip_code,
+                        token
                     });
                 }
             );
@@ -70,6 +77,10 @@ router.post("/", (req, res) => {
                     if (err) {
                         return res.status(500).send(err);
                     }
+
+                    // Generate JWT for the user
+                    const token = jwt.sign({ userId, role }, secretKey, { expiresIn: '15min' });
+                    
                     res.status(201).json({
                         message: "Job seeker account created successfully",
                         user_id: userId,

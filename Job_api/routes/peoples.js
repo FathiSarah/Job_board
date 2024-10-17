@@ -68,7 +68,16 @@ router.post("/", (req, res) => {
                     if (err) {
                         return res.status(500).send(err);
                     }
-                    res.json({ id: peopleResult.insertId, user_id: userId, first_name, last_name, email, tel, city, zip_code });
+                    res.json({ 
+                        id: peopleResult.insertId, 
+                        user_id: userId, 
+                        first_name, 
+                        last_name, 
+                        email, 
+                        tel, 
+                        city, 
+                        zip_code 
+                    });
                 }
             );
         }

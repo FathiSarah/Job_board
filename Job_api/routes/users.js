@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
+const authenticateJWT = require("C:/Users/eliot/Desktop/T-WEB-501-STG_15/Job_api/middleware/authMiddleware");
 
-const db = require("mysql").createConnection({
+const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -10,7 +11,7 @@ const db = require("mysql").createConnection({
 });
 
 // Get all users
-router.get("/", (req, res) => {
+router.get("/", authenticateJWT, (req, res) => {
     const query = "SELECT * FROM peoples";
     db.query(query, (err, results) => {
         if (err) {
