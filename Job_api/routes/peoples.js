@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
+const authenticateJWT = require("../middleware/middleware.js");
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -9,8 +10,8 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME,
 });
 
-// Get all job seekers (peoples) along with their user information
-router.get("/", (req, res) => {
+// Get all peoples
+router.get("/", authenticateJWT, (req, res) => {
     db.query(`
         SELECT peoples.*, users.email 
         FROM peoples 
@@ -19,12 +20,12 @@ router.get("/", (req, res) => {
             if (err) {
                 return res.status(500).send(err);
             }
-            res.json(results);
+            res.status(200).json(results);
         });
 });
 
-// Get a specific job seeker (people) by ID, including their user information
-router.get("/:id", (req, res) => {
+// Get a specific people by ID
+router.get("/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
     db.query(`
         SELECT peoples.*, users.email 
@@ -39,13 +40,13 @@ router.get("/:id", (req, res) => {
             if (results.length === 0) {
                 return res.status(404).send("User not found");
             }
-            res.json(results[0]);
+            res.status(200).json(results[0]);
         }
     );
 });
 
-// Create a new job seeker (people) with corresponding user entry
-router.post("/", (req, res) => {
+// Create a new job seeker people with corresponding user entry
+router.post("/", authenticateJWT, (req, res) => {
     const { first_name, last_name, email, tel, city, zip_code, password } = req.body;
 
     if (!first_name || !last_name || !email || !tel || !city || !zip_code || !password) {
@@ -68,7 +69,7 @@ router.post("/", (req, res) => {
                     if (err) {
                         return res.status(500).send(err);
                     }
-                    res.json({ 
+                    res.status(200).json({ 
                         id: peopleResult.insertId, 
                         user_id: userId, 
                         first_name, 
@@ -85,11 +86,11 @@ router.post("/", (req, res) => {
 });
 
 // Update a specific job seeker and their corresponding user info
-router.put("/:id", (req, res) => {
+router.put("/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
     const { first_name, last_name, email, tel, city, zip_code, password } = req.body;
 
-    // First, update the email and password in the `users` table
+    // Update the email and password in the `users` table
     db.query(
         "UPDATE users SET email = ?, password = ? WHERE id = (SELECT user_id FROM peoples WHERE id = ?)", 
         [email, password, id], 
@@ -98,7 +99,7 @@ router.put("/:id", (req, res) => {
                 return res.status(500).send(err);
             }
 
-            // Then, update the job seeker details in the `peoples` table
+            // next, update the job seeker details in the `peoples` table
             db.query(
                 "UPDATE peoples SET first_name = ?, last_name = ?, tel = ?, city = ?, zip_code = ? WHERE id = ?",
                 [first_name, last_name, tel, city, zip_code, id],
@@ -109,7 +110,7 @@ router.put("/:id", (req, res) => {
                     if (peopleResult.affectedRows === 0) {
                         return res.status(404).send("User not found");
                     }
-                    res.json({ message: "User updated successfully" });
+                    res.status(200).json({ message: "User updated successfully" });
                 }
             );
         }
@@ -117,10 +118,10 @@ router.put("/:id", (req, res) => {
 });
 
 // Delete a specific job seeker and their corresponding user
-router.delete("/:id", (req, res) => {
+router.delete("/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
 
-    // First, retrieve the `user_id` linked to the `people`
+    // Retrieve the user_id linked to the people
     db.query("SELECT user_id FROM peoples WHERE id = ?", [id], (err, results) => {
         if (err) {
             return res.status(500).send(err);
@@ -131,13 +132,13 @@ router.delete("/:id", (req, res) => {
 
         const userId = results[0].user_id;
 
-        // Delete the job seeker from the `peoples` table
+        // Delete from the peoples table
         db.query("DELETE FROM peoples WHERE id = ?", [id], (err, peopleResult) => {
             if (err) {
                 return res.status(500).send(err);
             }
 
-            // Then delete the corresponding user from the `users` table
+            // Next, delete from the users table
             db.query("DELETE FROM users WHERE id = ?", [userId], (err, userResult) => {
                 if (err) {
                     return res.status(500).send(err);

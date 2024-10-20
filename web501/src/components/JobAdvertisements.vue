@@ -1,16 +1,13 @@
 <template>
     <div class="job-advertisements">
         <h1>Job Advertisements</h1>
-        <div v-if="loading">Loading job advertisements...</div>
-        <div v-else-if="error">{{ error }}</div>
+        <div v-if="error">{{ error }}</div>
         <div v-else>
-            <!-- Display the list of job ads -->
             <div v-for="ad in advertisements" :key="ad.id" class="job-ad">
                 <h2>{{ ad.title }}</h2>
                 <p><strong>City:</strong> {{ ad.city }}</p>
                 <p>{{ ad.description }}</p>
-        
-                <!-- Display detailed info for the selected ad -->
+                
                 <div v-if="selectedAd && selectedAd.id === ad.id" class="detailed-info">
                     <p><strong>Salary Range:</strong> {{ selectedAd.salary_range }}</p>
                     <p><strong>Company:</strong> {{ selectedAd.company_name }}</p>
@@ -20,12 +17,9 @@
                     </a>
                     </p>
         
-                    <!-- Apply button -->
                     <button class="apply-btn" @click="toggleApplicationForm(ad.id)">
                     Apply
                     </button>
-        
-                    <!-- Application form directly under job ad -->
                     <div v-if="showForm && selectedJobForApplication.id === ad.id" class="application-form">
                         <h3>Apply for: {{ selectedJobForApplication.title }}</h3>
                         <form @submit.prevent="submitApplication">
@@ -60,21 +54,19 @@
     </div>
 </template>
   
-  
 <script>
     export default {
         data() {
             return {
-                advertisements: [], // Store all ads
-                loading: true, // Loading state
+                advertisements: [],
                 error: null, // Error state
-                selectedAd: null, // Store the selected ad"s details
+                selectedAd: null, // Store the selected ad's details
                 showForm: false, // Show/Hide form
                 selectedJobForApplication: null, // Store selected job for application
                 applicationForm: { // Form data
-                complet_name: "", // Update to match DB column
-                email: "",
-                message: ""
+                    complet_name: "", // Update to match DB column
+                    email: "",
+                    message: ""
                 },
                 loadingSubmission: false, // Loading state for submission
                 submissionError: null, // Error state for submission
@@ -83,7 +75,6 @@
         },
 
         created() {
-            // Fetch all advertisements when the component is mounted
             this.fetchAdvertisements();
         },
 
@@ -91,36 +82,33 @@
             // Fetch all advertisements
             async fetchAdvertisements() {
                 try {
-                const response = await fetch("http://localhost:3000/api/advertisements");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch advertisements");
-                }
-                this.advertisements = await response.json();
-        
-                // Fetch additional details for each advertisement
-                for (const ad of this.advertisements) {
-                    const companyResponse = await fetch(`http://localhost:3000/api/companies/${ad.company_id}`);
-                    if (companyResponse.ok) {
-                    const companyData = await companyResponse.json();
-                    ad.company_name = companyData.name;
-                    ad.company_website = companyData.website;
+                    const response = await fetch("http://localhost:3000/api/advertisements");
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch advertisements");
                     }
-                }
+                    this.advertisements = await response.json();
+        
+                    for (const ad of this.advertisements) {
+                        const companyResponse = await fetch(`http://localhost:3000/api/companies/${ad.company_id}`);
+                        if (companyResponse.ok) {
+                            const companyData = await companyResponse.json();
+                            ad.company_name = companyData.name;
+                            ad.company_website = companyData.website;
+                        }
+                    }
                 } catch (err) {
-                this.error = err.message;
-                } finally {
-                this.loading = false;
+                    this.error = err.message;
                 }
             },
         
-            // Fetch details for the selected advertisement when "Learn More" is clicked
+            // Learn More
             async learnMore(adId) {
                 try {
                     const response = await fetch(`http://localhost:3000/api/advertisements/${adId}`);
                     if (!response.ok) {
                         throw new Error("Failed to fetch advertisement details");
                     }
-                    this.selectedAd = await response.json(); // Store the detailed ad information
+                    this.selectedAd = await response.json();
                 } catch (err) {
                     this.error = err.message;
                 }
@@ -131,7 +119,7 @@
                 this.selectedAd = null;
             },
         
-            // Toggle the application form visibility for the selected job
+            // Toggle the application
             toggleApplicationForm(jobId) {
                 if (this.selectedJobForApplication && this.selectedJobForApplication.id === jobId) {
                     this.showForm = !this.showForm;
@@ -144,7 +132,7 @@
             // Submit the application form
             async submitApplication() {
                 const applicationData = {
-                    user_id: 4, // User_id à la mano ATTENTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    user_id: 4, // User_id manually selected ATTENTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     advertisement_id: this.selectedJobForApplication.id,
                     complet_name: this.applicationForm.complet_name,
                     email: this.applicationForm.email,

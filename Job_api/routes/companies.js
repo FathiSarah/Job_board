@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
+const authenticateJWT = require("../middleware/middleware.js");
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -9,8 +10,8 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME,
 });
 
-// Get all companies along with their user (email)
-router.get("/", (req, res) => {
+// Get all companies
+router.get("/", authenticateJWT, (req, res) => {
     db.query(`
         SELECT companies.*, users.email 
         FROM companies 
@@ -24,7 +25,7 @@ router.get("/", (req, res) => {
 });
 
 // Get a specific company by ID
-router.get("/:id", (req, res) => {
+router.get("/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
     db.query(`
         SELECT companies.*, users.email 
@@ -45,7 +46,7 @@ router.get("/:id", (req, res) => {
 });
 
 // Create a new company with corresponding user entry
-router.post("/", (req, res) => {
+router.post("/", authenticateJWT, (req, res) => {
     const { name, description, website, city, zip_code, email, password } = req.body;
 
     if (!name || !description || !website || !city || !zip_code || !email || !password) {
@@ -60,7 +61,7 @@ router.post("/", (req, res) => {
                 return res.status(500).send(err);
             }
 
-            const userId = userResult.insertId; // Get the ID of the created user
+            const userId = userResult.insertId;
 
             db.query("INSERT INTO companies (user_id, name, description, website, city, zip_code) VALUES (?, ?, ?, ?, ?, ?)",
                 [userId, name, description, website, city, zip_code],
@@ -68,7 +69,7 @@ router.post("/", (req, res) => {
                     if (err) {
                         return res.status(500).send(err);
                     }
-                    res.json({
+                    res.status(200).json({
                         id: userId, 
                         name, 
                         description, 
@@ -84,11 +85,11 @@ router.post("/", (req, res) => {
 });
 
 // Update a company and its user
-router.put("/:id", (req, res) => {
+router.put("/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
     const { name, description, website, city, zip_code, email, password } = req.body;
 
-    // First, update the user (email and password) in the `users` table
+    // Update in the users table
     db.query(
         "UPDATE users SET email = ?, password = ? WHERE id = (SELECT user_id FROM companies WHERE user_id = ?)", 
         [email, password, id], 
@@ -97,10 +98,10 @@ router.put("/:id", (req, res) => {
                 return res.status(500).send(err);
             }
 
-            // Then, update the company details in the `companies` table
+            // next, update details in the companies table
             db.query(
                 "UPDATE companies SET name = ?, description = ?, website = ?, city = ?, zip_code = ? WHERE user_id = ?",
-                [name, description, website, city, zip_code, id], // use user_id for updating
+                [name, description, website, city, zip_code, id],
                 (err, companyResult) => {
                     if (err) {
                         return res.status(500).send(err);
@@ -116,10 +117,10 @@ router.put("/:id", (req, res) => {
 });
 
 // Delete a company and its corresponding user
-router.delete("/:id", (req, res) => {
+router.delete("/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
 
-    // First, retrieve the `user_id` linked to the company
+    // First, retrieve the user_id linked to the company
     db.query("SELECT user_id FROM companies WHERE user_id = ?", [id], (err, results) => {
         if (err) {
             return res.status(500).send(err);
@@ -130,13 +131,13 @@ router.delete("/:id", (req, res) => {
 
         const userId = results[0].user_id;
 
-        // Delete the company from the `companies` table
+        // Delete from the companies table
         db.query("DELETE FROM companies WHERE user_id = ?", [id], (err, companyResult) => {
             if (err) {
                 return res.status(500).send(err);
             }
 
-            // Then delete the corresponding user from the `users` table
+            // Next delete from the users table
             db.query("DELETE FROM users WHERE id = ?", [userId], (err, userResult) => {
                 if (err) {
                     return res.status(500).send(err);

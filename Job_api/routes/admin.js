@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
+const authenticateJWT = require("../middleware/middleware.js");
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -11,21 +12,21 @@ const db = mysql.createConnection({
 
 // GET all records from all tables
 
-router.get("/users", (req, res) => {
+router.get("/users", authenticateJWT, (req, res) => {
     db.query("SELECT * FROM peoples", (err, results) => {
         if (err) return res.status(500).send(err);
         res.json(results);
     });
 });
 
-router.get("/companies", (req, res) => {
+router.get("/companies", authenticateJWT, (req, res) => {
     db.query("SELECT * FROM companies", (err, results) => {
         if (err) return res.status(500).send(err);
         res.json(results);
     });
 });
 
-router.get("/advertisements", (req, res) => {
+router.get("/advertisements", authenticateJWT, (req, res) => {
     const query = `
         SELECT advertisements.*, companies.name AS company_name 
         FROM advertisements 
@@ -37,7 +38,7 @@ router.get("/advertisements", (req, res) => {
     });
 });
 
-router.get("/applications", (req, res) => {
+router.get("/applications", authenticateJWT, (req, res) => {
     const query = `
         SELECT applications.*, peoples.first_name, peoples.last_name 
         FROM applications 
@@ -49,9 +50,9 @@ router.get("/applications", (req, res) => {
     });
 });
 
-// All other CRUD
+// USERS CUD
 
-router.post("/users", (req, res) => {
+router.post("/users", authenticateJWT, (req, res) => {
     const { first_name, last_name, email, tel, city, zip_code, password } = req.body;
     db.query("INSERT INTO peoples (first_name, last_name, email, tel, city, zip_code, password) VALUES (?, ?, ?, ?, ?, ?, ?)",
         [first_name, last_name, email, tel, city, zip_code, password],
@@ -62,7 +63,7 @@ router.post("/users", (req, res) => {
     );
 });
 
-router.put("/users/:id", (req, res) => {
+router.put("/users/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
     const { first_name, last_name, email, tel, city, zip_code, password } = req.body;
     db.query("UPDATE peoples SET first_name = ?, last_name = ?, email = ?, tel = ?, city = ?, zip_code = ?, password = ? WHERE id = ?",
@@ -75,7 +76,7 @@ router.put("/users/:id", (req, res) => {
     );
 });
 
-router.delete("/users/:id", (req, res) => {
+router.delete("/users/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
     db.query("DELETE FROM peoples WHERE id = ?", [id], (err, results) => {
         if (err) return res.status(500).send(err);
@@ -84,7 +85,9 @@ router.delete("/users/:id", (req, res) => {
     });
 });
 
-router.post("/companies", (req, res) => {
+//COMPANIES CUD
+
+router.post("/companies", authenticateJWT, (req, res) => {
     const { name, description, website, city, zip_code } = req.body;
     db.query("INSERT INTO companies (name, description, website, city, zip_code) VALUES (?, ?, ?, ?, ?)",
         [name, description, website, city, zip_code],
@@ -95,7 +98,7 @@ router.post("/companies", (req, res) => {
     );
 });
 
-router.put("/companies/:id", (req, res) => {
+router.put("/companies/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
     const { name, description, website, city, zip_code } = req.body;
     db.query("UPDATE companies SET name = ?, description = ?, website = ?, city = ?, zip_code = ? WHERE id = ?",
@@ -108,7 +111,7 @@ router.put("/companies/:id", (req, res) => {
     );
 });
 
-router.delete("/companies/:id", (req, res) => {
+router.delete("/companies/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
     db.query("DELETE FROM companies WHERE id = ?", [id], (err, results) => {
         if (err) return res.status(500).send(err);
@@ -117,7 +120,9 @@ router.delete("/companies/:id", (req, res) => {
     });
 });
 
-router.post("/advertisements", (req, res) => {
+//ADVERTISEMENTS CUD
+
+router.post("/advertisements", authenticateJWT, (req, res) => {
     const { title, description, company_id, city, zip_code, salary_range } = req.body;
     db.query("INSERT INTO advertisements (title, description, company_id, city, zip_code, salary_range) VALUES (?, ?, ?, ?, ?, ?)",
         [title, description, company_id, city, zip_code, salary_range],
@@ -128,7 +133,7 @@ router.post("/advertisements", (req, res) => {
     );
 });
 
-router.put("/advertisements/:id", (req, res) => {
+router.put("/advertisements/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
     const { title, description, company_id, city, zip_code, salary_range } = req.body;
     db.query("UPDATE advertisements SET title = ?, description = ?, company_id = ?, city = ?, zip_code = ?, salary_range = ? WHERE id = ?",
@@ -141,7 +146,7 @@ router.put("/advertisements/:id", (req, res) => {
     );
 });
 
-router.delete("/advertisements/:id", (req, res) => {
+router.delete("/advertisements/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
     db.query("DELETE FROM advertisements WHERE id = ?", [id], (err, results) => {
         if (err) return res.status(500).send(err);
@@ -150,7 +155,9 @@ router.delete("/advertisements/:id", (req, res) => {
     });
 });
 
-router.post("/applications", (req, res) => {
+//APPLICATION CUD
+
+router.post("/applications", authenticateJWT, (req, res) => {
     const { user_id, advertisement_id, message, email, complet_name } = req.body;
     db.query("INSERT INTO applications (user_id, advertisement_id, message, email, complet_name) VALUES (?, ?, ?, ?, ?)",
         [user_id, advertisement_id, message, email, complet_name],
@@ -161,7 +168,7 @@ router.post("/applications", (req, res) => {
     );
 });
 
-router.put("/applications/:id", (req, res) => {
+router.put("/applications/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
     const { message } = req.body;
     db.query("UPDATE applications SET message = ? WHERE id = ?",
@@ -174,7 +181,7 @@ router.put("/applications/:id", (req, res) => {
     );
 });
 
-router.delete("/applications/:id", (req, res) => {
+router.delete("/applications/:id", authenticateJWT, (req, res) => {
     const { id } = req.params;
     db.query("DELETE FROM applications WHERE id = ?", [id], (err, results) => {
         if (err) return res.status(500).send(err);
