@@ -36,16 +36,20 @@ Prerequisites :
 
 ## Project Structure
 
-- /backend               # Express backend (API)
--   /routes              # API routes (login.js, signup.js, etc.)
--   /middleware          # Authentication middleware
--   index.js             # Entry point for the Express server
-
-- /frontend              # Vue.js frontend
--   /components          # Vue components (Login.vue, Profile.vue, etc.)
--   App.vue              # Main app component
--   main.js              # Vue app entry point
--   router.js            # Vue Router configuration
-
-- job_board.sql          # MySQL database schema
-- README.md              # Project documentation
+```bash
+├───Job_api
+│   ├───middleware
+│   ├───routes
+│   ├───index.js
+├───web501
+│    ├───.vscode
+│    ├───dist
+│    ├───public
+│    ├───src
+│    │    ├───assets
+│    │    └───components
+│    ├───App.vue
+│    └───main.js
+├───job_board.sql
+└───README.md
+```
