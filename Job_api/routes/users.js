@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
-const authenticateJWT = require("../middleware/middleware.js");
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -11,7 +10,7 @@ const db = mysql.createConnection({
 });
 
 // Get all users
-router.get("/", authenticateJWT, (req, res) => {
+router.get("/", (req, res) => {
     const query = "SELECT * FROM peoples";
     db.query(query, (err, results) => {
         if (err) {
@@ -22,7 +21,7 @@ router.get("/", authenticateJWT, (req, res) => {
 });
 
 // Get a specific user by ID
-router.get("/:id", authenticateJWT, (req, res) => {
+router.get("/:id", (req, res) => {
     const { id } = req.params;
     const query = "SELECT * FROM peoples WHERE id = ?";
     

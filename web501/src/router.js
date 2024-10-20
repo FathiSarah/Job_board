@@ -3,6 +3,7 @@ import JobAdvertisements from "./components/JobAdvertisements.vue";
 import Login from "./components/login.vue";
 import Signup from "./components/signup.vue";
 import Admin from "./components/admin.vue";
+
 function isAuthenticated() {
   return !!localStorage.getItem("token");
 }
@@ -12,7 +13,7 @@ const routes = [
   { path: "/login", component: Login },
   { path: "/jobs", component: JobAdvertisements },
   { path: "/signup", component: Signup },
-  { path: "/admin", component: Admin, beforeEnter: authenticate },
+  { path: "/admin", component: Admin },
 ];
 
 function authenticate(to, from, next) {
