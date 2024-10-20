@@ -3,7 +3,7 @@ const mysql = require("mysql");
 const cors = require("cors");
 require("dotenv").config();
 
- // Import routes
+// Import routes
 
 const advertisementsRoutes = require("./routes/advertisements");
 const peoplesRoutes = require("./routes/peoples");
@@ -13,6 +13,9 @@ const usersRoutes = require("./routes/users");
 const adminRoutes = require("./routes/admin");
 const loginRouter = require("./routes/login");
 const signupRouter = require("./routes/signup");
+
+// Middleware 
+const middlewareRouter = require("./middleware/middleware");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -50,6 +53,8 @@ app.use("/api/users", usersRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/login", loginRouter);
 app.use("/api/signup", signupRouter);
+
+app.use("/api/middleware", middlewareRouter);
 
 // Start the server
 app.listen(PORT, () => {

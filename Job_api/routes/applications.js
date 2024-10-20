@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
+const authenticateJWT = require("../middleware/middleware.js");
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -10,7 +11,7 @@ const db = mysql.createConnection({
 });
 
 // Create a new application
-router.post("/", (req, res) => {
+router.post("/", authenticateJWT, (req, res) => {
     const { user_id, advertisement_id, message, email, complet_name } = req.body;
 
     if (!user_id || !advertisement_id || !complet_name || !email || !message) {
@@ -34,7 +35,7 @@ router.post("/", (req, res) => {
 });
 
 // Retrieve a specific application by ID
-router.get("/:id", (req, res) => {
+router.get("/:id", authenticateJWT, (req, res) => {
     const applicationId = req.params.id;
     const query = "SELECT * FROM applications WHERE id = ?";
     db.query(query, [applicationId], (err, results) => {
@@ -49,7 +50,7 @@ router.get("/:id", (req, res) => {
 });
 
 // Retrieve all applications
-router.get("/", (req, res) => {
+router.get("/", authenticateJWT, (req, res) => {
     const query = "SELECT * FROM applications";
     db.query(query, (err, results) => {
         if (err) {
@@ -60,7 +61,7 @@ router.get("/", (req, res) => {
 });
 
 // Update an application by ID
-router.put("/:id", (req, res) => {
+router.put("/:id", authenticateJWT, (req, res) => {
     const applicationId = req.params.id;
     const { message, email, complet_name } = req.body;
 
@@ -77,7 +78,7 @@ router.put("/:id", (req, res) => {
 });
 
 // Delete an application by ID
-router.delete("/:id", (req, res) => {
+router.delete("/:id", authenticateJWT, (req, res) => {
     const applicationId = req.params.id;
     const query = "DELETE FROM applications WHERE id = ?";
     db.query(query, [applicationId], (err, results) => {

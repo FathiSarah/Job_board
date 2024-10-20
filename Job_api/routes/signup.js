@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const secretKey = 'your-secret-key';
 
@@ -32,68 +33,76 @@ router.post("/", (req, res) => {
         return res.status(400).json({ message: "Invalid role specified" });
     }
 
-    // Insert into users table
-    db.query("INSERT INTO users (email, password, role) VALUES (?, ?, ?)", [email, password, role], (err, userResult) => {
+    // Hash the password
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
         if (err) {
             return res.status(500).send(err);
         }
 
-        const userId = userResult.insertId; // Get the user ID
+        // Insert into users table with bcrypt
+        db.query("INSERT INTO users (email, password, role) VALUES (?, ?, ?)", [email, hashedPassword, role], (err, userResult) => {
+            if (err) {
+                return res.status(500).send(err);
+            }
 
-        // If the role is "company", insert into the companies table
-        if (role === "company") {
-            db.query(
-                "INSERT INTO companies (user_id, name, description, website, city, zip_code) VALUES (?, ?, ?, ?, ?, ?)",
-                [userId, name, description, website, city, zip_code],
-                (err, companyResult) => {
-                    if (err) {
-                        return res.status(500).send(err);
+            const userId = userResult.insertId; // Get the user ID
+
+            // If the role is "company"
+            if (role === "company") {
+                db.query(
+                    "INSERT INTO companies (user_id, name, description, website, city, zip_code) VALUES (?, ?, ?, ?, ?, ?)",
+                    [userId, name, description, website, city, zip_code],
+                    (err, companyResult) => {
+                        if (err) {
+                            return res.status(500).send(err);
+                        }
+
+                        // Generate jwt
+                        const token = jwt.sign({ userId, role }, secretKey, { expiresIn: '15min' });
+
+                        res.status(201).json({
+                            message: "Company account created successfully",
+                            user_id: userId,
+                            email,
+                            name,
+                            description,
+                            website,
+                            city,
+                            zip_code,
+                            token // Include the jwt
+                        });
                     }
+                );
+            }
 
-                    // Generate JWT for the user
-                    const token = jwt.sign({ userId, role }, secretKey, { expiresIn: '15min' });
+            // If the role is "job_seeker"
+            else if (role === "job_seeker") {
+                db.query(
+                    "INSERT INTO peoples (user_id, first_name, last_name, tel, city, zip_code) VALUES (?, ?, ?, ?, ?, ?)",
+                    [userId, first_name, last_name, tel, city, zip_code],
+                    (err, peopleResult) => {
+                        if (err) {
+                            return res.status(500).send(err);
+                        }
 
-                    res.status(201).json({
-                        message: "Company account created successfully",
-                        user_id: userId,
-                        email,
-                        name,
-                        description,
-                        website,
-                        city,
-                        zip_code,
-                        token
-                    });
-                }
-            );
-        }
-
-        // If the role is "job_seeker", insert into the peoples table
-        else if (role === "job_seeker") {
-            db.query(
-                "INSERT INTO peoples (user_id, first_name, last_name, tel, city, zip_code) VALUES (?, ?, ?, ?, ?, ?)",
-                [userId, first_name, last_name, tel, city, zip_code],
-                (err, peopleResult) => {
-                    if (err) {
-                        return res.status(500).send(err);
+                        // Generate jwt
+                        const token = jwt.sign({ userId, role }, secretKey, { expiresIn: '15min' });
+                        
+                        res.status(201).json({
+                            message: "Job seeker account created successfully",
+                            user_id: userId,
+                            email,
+                            first_name,
+                            last_name,
+                            tel,
+                            city,
+                            zip_code,
+                            token // Include the jwt
+                        });
                     }
-
-                    // Generate JWT for the user
-                    const token = jwt.sign({ userId, role }, secretKey, { expiresIn: '15min' });
-                    
-                    res.status(201).json({
-                        message: "Job seeker account created successfully",
-                        user_id: userId,
-                        email,
-                        first_name,
-                        last_name,
-                        tel,
-                        city,
-                        zip_code,
-                    });
-                }
-            );
-        }
+                );
+            }
+        });
     });
 });
 
