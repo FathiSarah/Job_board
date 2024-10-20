@@ -19,11 +19,11 @@ Prerequisites :
 3. Navigate to the Job_api folder and run the following command to install dependencie :
     npm install
 4. Set up your `.env` file based on this exemple :
-    DB_HOST=localhost
-    DB_USER=root
-    DB_PASS=password
-    DB_NAME=job_board
-    PORT=3000
+-     DB_HOST=localhost
+-     DB_USER=root
+-     DB_PASS=password
+-     DB_NAME=job_board
+-     PORT=3000
 5. Import the MySQL database (from the SQL dump provided) :
     mysql -u root -p job_board < database.sql
 6. Start the backend server :
@@ -36,16 +36,16 @@ Prerequisites :
 
 ## Project Structure
 
-/backend               # Express backend (API)
-  /routes              # API routes (login.js, signup.js, etc.)
-  /middleware          # Authentication middleware
-  index.js             # Entry point for the Express server
+- /backend               # Express backend (API)
+-   /routes              # API routes (login.js, signup.js, etc.)
+-   /middleware          # Authentication middleware
+-   index.js             # Entry point for the Express server
 
-/frontend              # Vue.js frontend
-  /components          # Vue components (Login.vue, Profile.vue, etc.)
-  App.vue              # Main app component
-  main.js              # Vue app entry point
-  router.js            # Vue Router configuration
+- /frontend              # Vue.js frontend
+-   /components          # Vue components (Login.vue, Profile.vue, etc.)
+-   App.vue              # Main app component
+-   main.js              # Vue app entry point
+-   router.js            # Vue Router configuration
 
-job_board.sql          # MySQL database schema
-README.md              # Project documentation
+- job_board.sql          # MySQL database schema
+- README.md              # Project documentation
