@@ -54,8 +54,6 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/login", loginRouter);
 app.use("/api/signup", signupRouter);
 
-app.use("/api/middleware", middlewareRouter);
-
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
-const authenticateJWT = require("../middleware/middleware.js");
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -11,7 +10,7 @@ const db = mysql.createConnection({
 });
 
 // Get all companies
-router.get("/", authenticateJWT, (req, res) => {
+router.get("/", (req, res) => {
     db.query(`
         SELECT companies.*, users.email 
         FROM companies 
@@ -25,7 +24,7 @@ router.get("/", authenticateJWT, (req, res) => {
 });
 
 // Get a specific company by ID
-router.get("/:id", authenticateJWT, (req, res) => {
+router.get("/:id", (req, res) => {
     const { id } = req.params;
     db.query(`
         SELECT companies.*, users.email 
@@ -46,7 +45,7 @@ router.get("/:id", authenticateJWT, (req, res) => {
 });
 
 // Create a new company with corresponding user entry
-router.post("/", authenticateJWT, (req, res) => {
+router.post("/", (req, res) => {
     const { name, description, website, city, zip_code, email, password } = req.body;
 
     if (!name || !description || !website || !city || !zip_code || !email || !password) {
@@ -85,7 +84,7 @@ router.post("/", authenticateJWT, (req, res) => {
 });
 
 // Update a company and its user
-router.put("/:id", authenticateJWT, (req, res) => {
+router.put("/:id", (req, res) => {
     const { id } = req.params;
     const { name, description, website, city, zip_code, email, password } = req.body;
 
@@ -117,7 +116,7 @@ router.put("/:id", authenticateJWT, (req, res) => {
 });
 
 // Delete a company and its corresponding user
-router.delete("/:id", authenticateJWT, (req, res) => {
+router.delete("/:id", (req, res) => {
     const { id } = req.params;
 
     // First, retrieve the user_id linked to the company

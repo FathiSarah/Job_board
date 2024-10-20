@@ -1,7 +1,6 @@
 const express = require("express"); 
 const router = express.Router();
 const mysql = require("mysql");
-const authenticateJWT = require("../middleware/middleware.js");
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -46,7 +45,7 @@ router.get("/:id", (req, res) => {
 });
 
 // Create a new advertisement
-router.post("/", authenticateJWT, (req, res) => {
+router.post("/", (req, res) => {
     const { title, description, company_id, city, zip_code, salary_range } = req.body;
 
     if (!title || !description || !company_id || !city || !zip_code || !salary_range) {
@@ -74,7 +73,7 @@ router.post("/", authenticateJWT, (req, res) => {
 });
 
 // Update an existing advertisement
-router.put("/:id", authenticateJWT, (req, res) => {
+router.put("/:id", (req, res) => {
     const { id } = req.params;
     const { title, description, company_id, city, zip_code, salary_range } = req.body;
 
@@ -95,7 +94,7 @@ router.put("/:id", authenticateJWT, (req, res) => {
 });
 
 // Delete an advertisement
-router.delete("/:id", authenticateJWT, (req, res) => {
+router.delete("/:id", (req, res) => {
     const { id } = req.params;
 
     db.query("DELETE FROM advertisements WHERE id = ?", [id], (err, results) => {

@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
-const authenticateJWT = require("../middleware/middleware.js");
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -11,7 +10,7 @@ const db = mysql.createConnection({
 });
 
 // Get all peoples
-router.get("/", authenticateJWT, (req, res) => {
+router.get("/", (req, res) => {
     db.query(`
         SELECT peoples.*, users.email 
         FROM peoples 
@@ -25,7 +24,7 @@ router.get("/", authenticateJWT, (req, res) => {
 });
 
 // Get a specific people by ID
-router.get("/:id", authenticateJWT, (req, res) => {
+router.get("/:id", (req, res) => {
     const { id } = req.params;
     db.query(`
         SELECT peoples.*, users.email 
@@ -46,7 +45,7 @@ router.get("/:id", authenticateJWT, (req, res) => {
 });
 
 // Create a new job seeker people with corresponding user entry
-router.post("/", authenticateJWT, (req, res) => {
+router.post("/", (req, res) => {
     const { first_name, last_name, email, tel, city, zip_code, password } = req.body;
 
     if (!first_name || !last_name || !email || !tel || !city || !zip_code || !password) {
@@ -86,7 +85,7 @@ router.post("/", authenticateJWT, (req, res) => {
 });
 
 // Update a specific job seeker and their corresponding user info
-router.put("/:id", authenticateJWT, (req, res) => {
+router.put("/:id", (req, res) => {
     const { id } = req.params;
     const { first_name, last_name, email, tel, city, zip_code, password } = req.body;
 
@@ -118,7 +117,7 @@ router.put("/:id", authenticateJWT, (req, res) => {
 });
 
 // Delete a specific job seeker and their corresponding user
-router.delete("/:id", authenticateJWT, (req, res) => {
+router.delete("/:id", (req, res) => {
     const { id } = req.params;
 
     // Retrieve the user_id linked to the people
